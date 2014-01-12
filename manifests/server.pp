@@ -70,7 +70,7 @@ class galera::server (
     include '::galera::server::install'
     include '::galera::server::config'
     class {
-      'mysql::client':
+      'galera::client':
         package_name         => $::galera::server::real_client_package_name,
         package_ensure       => $::galera::server::package_ensure,
         package_distribution => $::galera::server::package_distribution
