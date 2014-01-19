@@ -9,6 +9,7 @@ class galera::params {
   $server_package_ensure  = 'present'
   $server_service_manage  = true
   $server_service_enabled = true
+  $primary                = false
   # galera::bindings
   $bindings_enable         = false
   $java_package_ensure     = 'present'

@@ -1,5 +1,5 @@
 name    'dexterp/galera'
-version '0.1.0'
+version '0.2.0'
 source 'git://github.com/dexterp/dexterp-galera.git'
 author 'Dexter Plameras'
 license 'Apache License, Version 2.0'

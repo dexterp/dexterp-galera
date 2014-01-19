@@ -64,6 +64,12 @@ match the relevant distribution.
 
   Native packages from OS distribution.
 
+####`primary`
+
+Default: `false`
+
+Determines if host acts as primary. Secondary servers create a /root/.my.cnf before mysql client connections.
+
 ####`wsrep_sst_auth`
 
 Default: `root:$root_password`
@@ -133,15 +139,19 @@ Configuration:
     node galeracluster {
       class {
         'galera::server':
-          root_password    => 'password',
-          service_name     => 'mysql',
-          service_enabled  => false,
-          wsrep_cluster_address    => 'gcomm://192.168.1.15,192.168.1.16,192.168.1.17',
-          wsrep_cluster_name       => 'my_wsrep_cluster',
-          wsrep_provider           => '/usr/lib64/galera/libgalera_smm.so',
-          wsrep_node_address       => $::ipaddress_eth1,
-          wsrep_sst_method         => 'rsync',
-          wsrep_sst_auth           => "root:password",
+          root_password         => 'password',
+          service_name          => 'mysql',
+          service_enabled       => false,
+          primary               => $::hostname ? {
+                                     /db01/  => true,
+                                     default => false
+                                   },
+          wsrep_cluster_address => 'gcomm://192.168.1.15,192.168.1.16,192.168.1.17',
+          wsrep_cluster_name    => 'my_wsrep_cluster',
+          wsrep_provider        => '/usr/lib64/galera/libgalera_smm.so',
+          wsrep_node_address    => $::ipaddress_eth1,
+          wsrep_sst_method      => 'rsync',
+          wsrep_sst_auth        => "root:password",
           override_options => {
             mysqld => {
               bind-address             => false,
@@ -181,7 +191,7 @@ Configuration:
       }
     }
 
-    # Galera recommends minium of 3 servers so that a primary can be elected
+    # A minimum of 3 servers is recommended for the highest availability without performance impact
     node /^db\d+/ inherits galeracluster {
     }
 

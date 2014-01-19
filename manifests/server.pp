@@ -1,5 +1,6 @@
 # Class: galera::server:  See README.md for documentation.
 class galera::server (
+  $primary                 = $galera::params::primary,
   $wsrep_sst_auth          = false,
   $wsrep_cluster_address   = $galera::params::wsrep_cluster_address,
   $wsrep_cluster_name      = $galera::params::wsrep_cluster_name,
@@ -74,6 +75,16 @@ class galera::server (
         package_name         => $::galera::server::real_client_package_name,
         package_ensure       => $::galera::server::package_ensure,
         package_distribution => $::galera::server::package_distribution
+    }
+  }
+  unless $primary {
+    exec {
+      'root-my-cnf-override':
+        command => "/bin/echo \"[client]\nuser=root\nhost=localhost\npassword=${root_password}\n\" > /root/.my.cnf",
+        user    => root,
+        unless  => "/usr/bin/test -f /root/.my.cnf && ${primary} ne 'true'",
+        umask   => '066',
+        before  => Class[ 'mysql::server' ],
     }
   }
   class {
